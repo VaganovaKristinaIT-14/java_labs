@@ -1,0 +1,17 @@
+
+/**
+ * Тестовый класс для демонстрации аннотации @ToString.
+ */
+@ToString
+public class TestForToString {
+
+  private String name = "Иван";
+  private int age = 25;
+  /**
+   * Поле исключено из строкового представления.
+   */
+  @ToString("NO")
+  private String password = "12345";
+
+  private String user = "username";
+}

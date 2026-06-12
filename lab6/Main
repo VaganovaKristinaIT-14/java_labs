@@ -1,0 +1,52 @@
+import java.util.Scanner;
+/**
+ * Главный класс для демонстрации работы аннотаций.
+ */
+public class Main {
+  /**
+   * Основной метод для выбора и запуска заданий.
+   * @param args аргументы командной строки
+   */
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Введите номер задания, которое хотите посмотреть");
+    System.out.println("1. Аннотация Invoke ");
+    System.out.println("2. Аннотация Default");
+    System.out.println("3. Аннотация ToString ");
+    System.out.println("4. Аннотация Validate");
+    System.out.println("5.Аннотация Two");
+    System.out.println("6.Аннотация Cache");
+    int choice = InputValidation.inputInt(" ", 1, 6);
+    switch (choice) {
+      case 1: {
+        TestForInvoke testObject = new TestForInvoke();
+
+        System.out.println("\n Методы с аннотацией Invoke:");
+        AnnotationProcessor.processForInvoke(testObject);
+        break;
+      }
+      case 2:{
+        AnnotationProcessor.processForDefault(TestForDefault.class);
+        break;
+      }
+      case 3:{
+        TestForToString testObject = new TestForToString();
+        String stringRepresentation = AnnotationProcessor.processForToString(testObject);
+        System.out.println("Строковое представление: " + stringRepresentation);
+        break;
+      }
+      case 4:{
+        AnnotationProcessor.processForValidate(TestForValidate.class);
+        break;
+      }
+      case 5:{
+        AnnotationProcessor.processForTwo(TestForTwo.class);
+        break;
+      }
+      case 6:{
+        AnnotationProcessor.processForCache(TestForCache.class);
+        break;
+      }
+    }
+  }
+}

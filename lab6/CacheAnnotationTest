@@ -1,0 +1,107 @@
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.*;
+
+/**
+ * Тесты для аннотации @Cache.
+ */
+class CacheAnnotationTest {
+
+  /**
+   * Тест чтения значений аннотации @Cache.
+   */
+  @Test
+  void testCacheAnnotationValueReading() {
+    Cache cacheAnnotation = TestForCache.class.getAnnotation(Cache.class);
+    assertNotNull(cacheAnnotation, "Аннотация @Cache должна присутствовать на классе");
+
+    String[] cacheAreas = cacheAnnotation.value();
+    assertEquals(3, cacheAreas.length, "Должно быть 3 кешируемые области");
+    assertArrayEquals(new String[]{"users", "products", "orders"}, cacheAreas,
+        "Кешируемые области должны совпадать с указанными в аннотации");
+  }
+
+  /**
+   * Тест доступа к кешу с использованием моков.
+   */
+  @Test
+  void testMockCacheAccessWithBuiltInMocks() {
+    SimpleCacheMock cacheMock = new SimpleCacheMock();
+
+    cacheMock.put("users", "user123", "Данные пользователя");
+    cacheMock.put("products", "product456", "Информация о продукте");
+
+    String userData = cacheMock.get("users", "user123");
+    String productData = cacheMock.get("products", "product456");
+
+    assertEquals("Данные пользователя", userData);
+    assertEquals("Информация о продукте", productData);
+
+    assertTrue(cacheMock.contains("users", "user123"));
+    assertTrue(cacheMock.contains("products", "product456"));
+  }
+
+  /**
+   * Тест пустого массива кешируемых областей.
+   */
+  @Test
+  void testNoCachingForEmptyArray() {
+    Cache cacheAnnotation = EmptyCacheService.class.getAnnotation(Cache.class);
+    String[] cacheAreas = cacheAnnotation.value();
+
+    assertEquals(0, cacheAreas.length, "Массив кешируемых областей должен быть пустым");
+
+    assertFalse(shouldCacheBeUsed(EmptyCacheService.class),
+        "Для EmptyCacheService кеширование не должно производиться");
+  }
+
+  /**
+   * Тест нескольких именованных областей кеша.
+   */
+  @Test
+  void testMultipleNamedCacheAreas() {
+    Cache cacheAnnotation = TestForCache.class.getAnnotation(Cache.class);
+    String[] cacheAreas = cacheAnnotation.value();
+
+    assertEquals(3, cacheAreas.length, "Должно быть 3 кешируемые области");
+    assertEquals("users", cacheAreas[0]);
+    assertEquals("products", cacheAreas[1]);
+    assertEquals("orders", cacheAreas[2]);
+  }
+
+  /**
+   * Проверяет нужно ли использовать кеширование.
+   *
+   * @param clazz класс для проверки
+   * @return true если кеширование нужно
+   */
+  private boolean shouldCacheBeUsed(Class<?> clazz) {
+    if (clazz.isAnnotationPresent(Cache.class)) {
+      Cache cacheAnnotation = clazz.getAnnotation(Cache.class);
+      return cacheAnnotation.value().length > 0;
+    }
+    return false;
+  }
+
+  /**
+   * Простой мок кеша для тестирования.
+   */
+  static class SimpleCacheMock {
+
+    private final Map<String, String> storage = new HashMap<>();
+
+    public void put(String area, String key, String value) {
+      storage.put(area + ":" + key, value);
+    }
+
+    public String get(String area, String key) {
+      return storage.get(area + ":" + key);
+    }
+
+    public boolean contains(String area, String key) {
+      return storage.containsKey(area + ":" + key);
+    }
+  }
+}
