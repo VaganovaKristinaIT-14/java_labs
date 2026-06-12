@@ -1,0 +1,60 @@
+class Fraction implements FractionInterface {
+
+  private int numerator;
+  private int denominator;
+  private Double cachedValue;
+
+  public Fraction(int numerator, int denominator) {
+    setValues(numerator, denominator);
+  }
+
+  private void normalizeSign() {
+    if (denominator < 0) {
+      numerator = -numerator;
+      denominator = -denominator;
+    }
+  }
+
+  @Override
+  public String toString() {
+    return numerator + "/" + denominator;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    Fraction other = (Fraction) obj;
+    return numerator == other.numerator && denominator == other.denominator;
+
+  }
+
+  @Override
+  public double getDecimalValue() {
+    if (cachedValue == null) {
+      System.out.println("Вычисление значения");
+      cachedValue = (double) numerator / denominator;
+    } else {
+      System.out.println("Значение уже было посчитано");
+    }
+    return cachedValue;
+  }
+
+  @Override
+  public void setValues(int numerator, int denominator) {
+    denominator = InputValidation.validInt(denominator, -1000, 1000);
+    if (denominator == 0) {
+      throw new IllegalArgumentException("Знаменатель не может быть равен нулю");
+    }
+
+    this.numerator = InputValidation.validInt(numerator, -1000, 1000);
+    this.denominator = denominator;
+    normalizeSign();
+    cachedValue = null;
+  }
+}

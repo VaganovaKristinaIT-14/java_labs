@@ -1,0 +1,22 @@
+import java.util.*;
+
+public class ListUtils {
+
+  public static <T> void removeDuplicates(List<T> list) {
+    if (list == null || list.isEmpty()) {
+      return;
+    }
+
+    Iterator<T> iterator = list.iterator();
+    T previous = iterator.next();
+
+    while (iterator.hasNext()) {
+      T current = iterator.next();
+      if (current.equals(previous)) {
+        iterator.remove();
+      } else {
+        previous = current;
+      }
+    }
+  }
+}

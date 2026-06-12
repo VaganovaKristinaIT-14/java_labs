@@ -1,0 +1,15 @@
+import java.util.Random;
+
+class Sound {
+
+  private static final Random random = new Random();
+
+  public static void meowsCare(Meowable meowable) {
+    System.out.println("Начало мяуканья:");
+    int meowTimes = random.nextInt(10) + 1;
+    for (int i = 0; i < meowTimes; i++) {
+      meowable.meow();
+    }
+    System.out.println("Конец мяуканья");
+  }
+}

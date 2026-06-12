@@ -1,0 +1,31 @@
+import java.util.*;
+
+public class CountQueue {
+
+  public static boolean hasEqualNum(Queue<Integer> queue) {
+    if (queue.isEmpty() || queue.size() == 1) {
+      return false;
+    }
+
+    Queue<Integer> tempQueue = new LinkedList<>(queue);
+
+    int first = tempQueue.poll();
+    int current = first;
+    int previous = first;
+
+    while (!tempQueue.isEmpty()) {
+      previous = current;
+      current = tempQueue.poll();
+
+      if (previous == current) {
+        return true;
+      }
+    }
+
+    if (current == first) {
+      return true;
+    }
+
+    return false;
+  }
+}

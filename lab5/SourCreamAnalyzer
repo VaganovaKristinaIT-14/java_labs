@@ -1,0 +1,112 @@
+import java.util.*;
+import java.io.*;
+
+public class SourCreamAnalyzer {
+
+  public static int[] analyzeStores(List<String> storeData) {
+
+    int minPrice15 = 5001;
+    int minPrice20 = 5001;
+    int minPrice25 = 5001;
+
+    Map<Integer, Integer> storeCount = new HashMap<>();
+    storeCount.put(15, 0);
+    storeCount.put(20, 0);
+    storeCount.put(25, 0);
+
+    for (String line : storeData) {
+
+      if (!isValidStoreData(line)) {
+        continue;
+      }
+
+      String[] parts = line.split(" ");
+      int fat = Integer.parseInt(parts[parts.length - 2]);
+      int price = Integer.parseInt(parts[parts.length - 1]);
+
+      switch (fat) {
+        case 15:
+
+          if (price < minPrice15) {
+            minPrice15 = price;
+            storeCount.put(15, 1);
+          } else if (price == minPrice15) {
+            storeCount.put(15, storeCount.get(15) + 1);
+          }
+          break;
+        case 20:
+          if (price < minPrice20) {
+            minPrice20 = price;
+            storeCount.put(20, 1);
+          } else if (price == minPrice20) {
+            storeCount.put(20, storeCount.get(20) + 1);
+          }
+          break;
+        case 25:
+          if (price < minPrice25) {
+            minPrice25 = price;
+            storeCount.put(25, 1);
+          } else if (price == minPrice25) {
+            storeCount.put(25, storeCount.get(25) + 1);
+          }
+          break;
+      }
+    }
+
+    if (minPrice15 == 5001) {
+      storeCount.put(15, 0);
+    }
+    if (minPrice20 == 5001) {
+      storeCount.put(20, 0);
+    }
+    if (minPrice25 == 5001) {
+      storeCount.put(25, 0);
+    }
+
+    return new int[]{
+        storeCount.get(15),
+        storeCount.get(20),
+        storeCount.get(25)
+    };
+  }
+
+  public static boolean isValidStoreData(String line) {
+    if (line == null || line.trim().isEmpty()) {
+      return false;
+    }
+
+    String[] parts = line.split(" ");
+
+    if (parts.length < 4) {
+      return false;
+    }
+
+    if (parts[0].length() > 20 || parts[1].length() > 20) {
+      return false;
+    }
+
+    try {
+      int fat = Integer.parseInt(parts[parts.length - 2]);
+      int price = Integer.parseInt(parts[parts.length - 1]);
+
+      return (fat == 15 || fat == 20 || fat == 25) &&
+          (price >= 2000 && price <= 5000);
+
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  public static List<String> readDataFromFile(String filename) {
+    List<String> storeData = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        storeData.add(line);
+      }
+    } catch (IOException e) {
+      System.out.println("Ошибка чтения файла: " + e.getMessage());
+    }
+    return storeData;
+  }
+}

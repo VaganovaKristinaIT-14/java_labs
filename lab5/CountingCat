@@ -1,0 +1,20 @@
+class CountingCat implements Meowable {
+
+  private final Cat realCat;
+  private int meowCount;
+
+  public CountingCat(Cat cat) {
+    this.realCat = cat;
+    this.meowCount = 0;
+  }
+
+  @Override
+  public void meow() {
+    realCat.meow();
+    meowCount++;
+  }
+
+  public int getMeowCount() {
+    return meowCount;
+  }
+}

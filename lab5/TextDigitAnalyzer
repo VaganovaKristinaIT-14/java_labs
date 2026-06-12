@@ -1,0 +1,37 @@
+import java.util.*;
+import java.io.*;
+
+public class TextDigitAnalyzer {
+
+  public static Set<Character> findDigitsInText(String filename) {
+    Set<Character> digits = new LinkedHashSet<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        for (char c : line.toCharArray()) {
+          if (Character.isDigit(c)) {
+            digits.add(c);
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.out.println("Ошибка чтения файла: " + e.getMessage());
+    }
+
+    return digits;
+  }
+
+  public static String readFullText(String filename) {
+    StringBuilder text = new StringBuilder();
+    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        text.append(line).append("\n");
+      }
+    } catch (IOException e) {
+      System.out.println("Ошибка чтения файла: " + e.getMessage());
+    }
+    return text.toString();
+  }
+}

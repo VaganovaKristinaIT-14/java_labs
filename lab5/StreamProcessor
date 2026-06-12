@@ -1,0 +1,21 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class StreamProcessor {
+
+  public static Polyline processPoints(List<Point> points) {
+    Point[] result = points.stream()
+        .distinct()
+        .sorted(Comparator.comparing(Point::getX))
+        .map(point -> {
+          double newY = point.getY();
+          if (newY < 0) {
+            newY = -newY;
+          }
+          return new Point(point.getX(), newY);
+        })
+        .toArray(Point[]::new);
+
+    return new Polyline(result);
+  }
+}

@@ -1,0 +1,186 @@
+import java.util.Scanner;
+import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+
+public class Main {
+
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Введите номер задания, которое хотите посмотреть");
+    System.out.println("1. Дробь с кэшированием ");
+    System.out.println("2. Подсчет мяуканий");
+    System.out.println("3. Из одинаковых элементов один");
+    System.out.println("4. Анализ сметанки");
+    System.out.println("5.Циферки в тексте");
+    System.out.println("6.Соседи в очереди");
+    System.out.println("7.Стрим точек");
+    System.out.println("8.Стрим людей");
+    int choice = InputValidation.inputInt(" ", 1, 8);
+    switch (choice) {
+      case 1: {
+        System.out.println("Создание дроби");
+        int numerator = InputValidation.inputInt("Введите числитель: ", -1000, 1000);
+        int denominator = InputValidation.inputInt("Введите знаменатель: ", -1000, 1000);
+        Fraction fraction = new Fraction(numerator, denominator);
+        System.out.println("Создана дробь: " + fraction);
+
+        System.out.println("1 вычисление вещественного значения ");
+        double value1 = fraction.getDecimalValue();
+        System.out.println("Результат: " + value1);
+
+        System.out.println("2 вычисление вещественного значения");
+        double value2 = fraction.getDecimalValue();
+        System.out.println("Результат: " + value2);
+
+        System.out.println("Изменение дроби");
+        int newNumerator = InputValidation.inputInt("Введите новый числитель: ", -1000, 1000);
+        int newDenominator = InputValidation.inputInt("Введите новый знаменатель: ", -1000, 1000);
+        fraction.setValues(newNumerator, newDenominator);
+        System.out.println("Измененная дробь: " + fraction);
+        break;
+      }
+      case 2: {
+        Meowable m = new CountingCat(new Cat("Барсик"));
+        Sound.meowsCare(m);
+        System.out.println("кот мяукал " + ((CountingCat) m).getMeowCount() + " раз");
+        break;
+      }
+      case 3: {
+
+        List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 1, 2, 2, 2, 3, 1, 1, 4, 4, 5));
+        System.out.println("Исходный список чисел: " + numbers);
+        ListUtils.removeDuplicates(numbers);
+        System.out.println("После удаления дубликатов: " + numbers);
+
+        List<String> words = new ArrayList<>(
+            Arrays.asList("привет", "привет", "дом", "дом", "мир", "пир", "пир"));
+        System.out.println("\nИсходный список строк: " + words);
+        ListUtils.removeDuplicates(words);
+        System.out.println("После удаления дубликатов: " + words);
+
+        List<Character> chars = new ArrayList<>(Arrays.asList('a', 'a', 'b', 'c', 'c', 'c', 'd'));
+        System.out.println("\nИсходный список символов: " + chars);
+        ListUtils.removeDuplicates(chars);
+        System.out.println("После удаления дубликатов: " + chars);
+        break;
+      }
+      case 4: {
+        System.out.print("Введите имя файла с данными: ");
+        String filename = "test4.txt";
+        List<String> storeData = SourCreamAnalyzer.readDataFromFile(filename);
+
+        if (storeData.isEmpty()) {
+          System.out.println("Файл пуст или не найден");
+          return;
+        }
+
+        System.out.println("\n=== ДАННЫЕ ИЗ ФАЙЛА ===");
+        for (int i = 0; i < storeData.size(); i++) {
+          System.out.println(storeData.get(i));
+        }
+        System.out.println("=======================\n");
+
+        int n = Integer.parseInt(storeData.get(0));
+
+        List<String> storeInfo = storeData.subList(1, storeData.size());
+
+        System.out.println("Обработано магазинов: " + n);
+
+        int[] result = SourCreamAnalyzer.analyzeStores(storeInfo);
+        System.out.println("Результат: " + result[0] + " " + result[1] + " " + result[2]);
+        break;
+      }
+      case 5: {
+        String filename = "test5.txt";
+        String fullText = TextDigitAnalyzer.readFullText(filename);
+        if (fullText.isEmpty()) {
+          System.out.println("Файл пустой!");
+          return;
+        }
+        System.out.println("Текст из файла");
+        System.out.println(fullText);
+
+        Set<Character> digits = TextDigitAnalyzer.findDigitsInText(filename);
+
+        if (digits.isEmpty()) {
+          System.out.println("В тексте не найдено цифр");
+        } else {
+          System.out.println("Цифры в тексте: " + digits);
+        }
+        break;
+
+      }
+      case 6: {
+        System.out.print("Введите количество элементов в очереди: ");
+        int n = scanner.nextInt();
+
+        Queue<Integer> queue = new LinkedList<>();
+
+        System.out.println("Введите элементы очереди:");
+        for (int i = 0; i < n; i++) {
+          int element = scanner.nextInt();
+          queue.add(element);
+        }
+
+        System.out.println("Очередь: " + queue);
+
+        boolean result = CountQueue.hasEqualNum(queue);
+
+        if (result) {
+          System.out.println("В очереди ЕСТЬ соседние равные элементы (по кругу)");
+        } else {
+          System.out.println("В очереди НЕТ соседних равных элементов (по кругу)");
+        }
+        break;
+      }
+      case 7: {
+        List<Point> points = new ArrayList<>();
+        points.add(new Point(3, 4));
+        points.add(new Point(1, -2));
+        points.add(new Point(3, 4));
+        points.add(new Point(5, -6));
+        points.add(new Point(2, 8));
+        points.add(new Point(1, 2));
+        points.add(new Point(7, -3));
+        points.add(new Point(5, 6));
+
+        System.out.println("Исходные точки:");
+        for (Point p : points) {
+          System.out.println(p);
+        }
+
+        Polyline polyline = StreamProcessor.processPoints(points);
+
+        System.out.println("\nРезультат:");
+        System.out.println(polyline);
+        break;
+      }
+      case 8: {
+        String filename = "test8.txt";
+        System.out.println("\n=== ДАННЫЕ ИЗ ФАЙЛА ===");
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+          String line;
+          while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+          }
+        } catch (IOException e) {
+          System.out.println("Ошибка чтения файла: " + e.getMessage());
+          return;
+        }
+        System.out.println("=======================\n");
+
+        Map<Integer, List<String>> result = PersonProcessor.processPeople(filename);
+
+        System.out.println("\nРезультат:");
+        for (Map.Entry<Integer, List<String>> entry : result.entrySet()) {
+          System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        break;
+
+      }
+    }
+  }
+}

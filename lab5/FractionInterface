@@ -1,0 +1,6 @@
+public interface FractionInterface {
+
+  double getDecimalValue();
+
+  void setValues(int numerator, int denominator);
+}
