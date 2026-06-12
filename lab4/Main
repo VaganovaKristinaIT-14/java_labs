@@ -1,0 +1,415 @@
+import java.util.Scanner;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.BinaryOperator;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class Main {
+
+
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Введите номер задания, которое хотите посмотреть");
+    System.out.println("1. Коробка ");
+    System.out.println("2. Хранилище с альтернативой");
+    System.out.println("3. Коробка с 3Д точкой");
+    System.out.println("4. Функция");
+    System.out.println("5.Фильтр");
+    System.out.println("6.Сокращение");
+    System.out.println("7.Коллекционирование");
+    int choice = InputValidation.inputInt(" ", 1, 7);
+    switch (choice) {
+
+      case 1: {
+        Box<Integer> intBox = new Box<>();
+        System.out.println("Создана коробка для целых чисел");
+        System.out.println(intBox.toString());
+
+        int num = InputValidation.inputInt("Добавьте число в коробку:", -100, 100);
+        intBox.put(num);
+        System.out.println(intBox.toString());
+        System.out.println("Коробка заполнена? " + intBox.isFull());
+
+        int value = intBox.take();
+        System.out.println("Извлеченное значение: " + value);
+
+        System.out.println("\nСостояние коробки после извлечения:");
+        System.out.println(intBox.toString());
+        System.out.println("Коробка заполнена? " + intBox.isFull());
+        break;
+      }
+      case 2: {
+
+        System.out.println("\n1. Хранилище чисел с null (альтернатива 0):");
+        Storage<Integer> storage1 = new Storage<>(null);
+        System.out.println(storage1.toString());
+        int val1 = storage1.get(0);
+        System.out.println("Извлеченное значение: " + val1);
+
+        System.out.println("\n2. Хранилище чисел с 99 (альтернатива -1):");
+        Storage<Integer> storage2 = new Storage<>(99);
+        System.out.println(storage2.toString());
+        int val2 = storage2.get(-1);
+        System.out.println("Извлеченное значение: " + val2);
+
+        System.out.println("\n3. Хранилище строк с null (альтернатива 'default'):");
+        Storage<String> storage3 = new Storage<>(null);
+        System.out.println(storage3.toString());
+        String val3 = storage3.get("default");
+        System.out.println("Извлеченное значение: " + val3);
+
+        System.out.println("\n4. Хранилище с 'hello' (альтернатива 'hello world'):");
+        Storage<String> storage4 = new Storage<>("hello");
+        System.out.println(storage4.toString());
+        String val4 = storage4.get("hello world");
+        System.out.println("Извлеченное значение: " + val4);
+        break;
+
+      }
+      case 3: {
+        Box<Point3D> pointBox = new Box<>();
+        Box<Object> objectBox = new Box<>();
+
+        System.out.println("\n1. Коробка для Point3D:");
+        System.out.println(pointBox.toString());
+        BoxUtils.putPointInBox(pointBox);
+        System.out.println("После заполнения: " + pointBox.toString());
+
+        System.out.println("\n2. Коробка для Object:");
+        System.out.println(objectBox.toString());
+        BoxUtils.putPointInBox(objectBox);
+        System.out.println("После заполнения: " + objectBox.toString());
+
+        System.out.println("\n3. Извлечение точек из коробок:");
+        try {
+          Point3D pointFromBox1 = pointBox.take();
+          System.out.println("Из коробки Point3D: " + pointFromBox1);
+        } catch (IllegalStateException e) {
+          System.out.println("Коробка Point3D пуста");
+        }
+
+        try {
+          Point3D pointFromBox2 = (Point3D) objectBox.take();
+          System.out.println("Из коробки Object: " + pointFromBox2);
+        } catch (IllegalStateException e) {
+          System.out.println("Коробка Object пуста");
+        } catch (ClassCastException e) {
+          System.out.println("Ошибка приведения типа");
+        }
+        break;
+      }
+      case 4: {
+        Function<String, Integer> stringLengthTransformer = new Function<String, Integer>() {
+          @Override
+          public Integer apply(String s) {
+            return s.length();
+          }
+        };
+
+        Function<Integer, Integer> absoluteValueTransformer = new Function<Integer, Integer>() {
+          @Override
+          public Integer apply(Integer n) {
+            return Math.abs(n);
+          }
+        };
+
+        Function<int[], Integer> maxValueFinder = new Function<int[], Integer>() {
+          @Override
+          public Integer apply(int[] arr) {
+            int max = arr[0];
+            for (int i = 1; i < arr.length; i++) {
+              if (arr[i] > max) {
+                max = arr[i];
+              }
+            }
+            return max;
+          }
+        };
+
+        System.out.println("\n1. Строки -> длины строк:");
+        List<String> stringList = Arrays.asList("qwerty", "asdfg", "zx");
+        List<Integer> lengthList = ForTransformList.transformList(stringList,
+            stringLengthTransformer);
+        System.out.println("Исходный: " + stringList);
+        System.out.println("Результат: " + lengthList);
+
+        System.out.println("\n2. Числа -> абсолютные значения:");
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        List<Integer> positiveNumbers = ForTransformList.transformList(numbers,
+            absoluteValueTransformer);
+        System.out.println("Исходный: " + numbers);
+        System.out.println("Результат: " + positiveNumbers);
+
+        System.out.println("\n3. Массивы -> максимальные значения (ввод с клавиатуры):");
+
+        List<int[]> arraysList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+          System.out.println("\n--- Массив " + (i + 1) + " ---");
+          System.out.print("Введите количество элементов в массиве (от 2 до 5): ");
+          int size = InputValidation.inputInt("", 2, 5);
+
+          int[] array = new int[size];
+          for (int j = 0; j < size; j++) {
+            System.out.print("Элемент " + (j + 1) + ": ");
+            array[j] = InputValidation.inputInt("", -100, 100);
+          }
+          arraysList.add(array);
+        }
+
+        List<Integer> maxValues = ForTransformList.transformList(arraysList, maxValueFinder);
+
+        System.out.println("\nРезультаты:");
+        System.out.print("Исходные массивы: ");
+        for (int[] arr : arraysList) {
+          System.out.print(Arrays.toString(arr) + " ");
+        }
+        System.out.println("\nМаксимальные значения: " + maxValues);
+
+        break;
+      }
+      case 5: {
+
+        Predicate<String> stringLengthTester = new Predicate<String>() {
+          @Override
+          public boolean test(String s) {
+            return s.length() >= 3;
+          }
+        };
+
+        Predicate<Integer> positiveNumberTester = new Predicate<Integer>() {
+          @Override
+          public boolean test(Integer n) {
+            return n > 0;
+          }
+        };
+
+        Predicate<int[]> noPositiveElementsTester = new Predicate<int[]>() {
+          @Override
+          public boolean test(int[] arr) {
+            for (int num : arr) {
+              if (num > 0) {
+                return false;
+              }
+            }
+            return true;
+          }
+        };
+
+        System.out.println("\n1. Фильтрация строк (длина >= 3):");
+        List<String> stringList = Arrays.asList("qwerty", "asdfg", "zx");
+        List<String> filteredStrings = Filter.filterList(stringList, stringLengthTester);
+        System.out.println("Исходный: " + stringList);
+        System.out.println("После фильтрации: " + filteredStrings);
+
+        System.out.println("\n2. Фильтрация чисел (положительные):");
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        List<Integer> positiveNumbers = Filter.filterList(numbers, positiveNumberTester);
+        System.out.println("Исходный: " + numbers);
+        System.out.println("После фильтрации: " + positiveNumbers);
+
+        System.out.println("\n3. Фильтрация массивов (нет положительных элементов):");
+
+        List<int[]> arraysList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+          System.out.println("\n--- Массив " + (i + 1) + " ---");
+          System.out.print("Введите количество элементов в массиве (от 2 до 5): ");
+          int size = InputValidation.inputInt("", 2, 5);
+
+          int[] array = new int[size];
+          for (int j = 0; j < size; j++) {
+            System.out.print("Элемент " + (j + 1) + ": ");
+            array[j] = InputValidation.inputInt("", -100, 100);
+          }
+          arraysList.add(array);
+        }
+
+        List<int[]> filteredArrays = Filter.filterList(arraysList, noPositiveElementsTester);
+
+        System.out.println("\nРезультаты фильтрации:");
+        System.out.print("Исходные массивы: ");
+        for (int[] arr : arraysList) {
+          System.out.print(Arrays.toString(arr) + " ");
+        }
+        System.out.print("\nПосле фильтрации: ");
+        for (int[] arr : filteredArrays) {
+          System.out.print(Arrays.toString(arr) + " ");
+        }
+        System.out.println("\nОставлено массивов: " + filteredArrays.size());
+        break;
+      }
+      case 6: {
+
+        BinaryOperator<String> stringConcatenator = new BinaryOperator<String>() {
+          @Override
+          public String apply(String s1, String s2) {
+            return s1 + s2;
+          }
+        };
+
+        BinaryOperator<Integer> sumReducer = new BinaryOperator<Integer>() {
+          @Override
+          public Integer apply(Integer n1, Integer n2) {
+            return n1 + n2;
+          }
+        };
+
+        BinaryOperator<Integer> totalSizeReducer = new BinaryOperator<Integer>() {
+          @Override
+          public Integer apply(Integer total, Integer size) {
+            return total + size;
+          }
+        };
+
+        System.out.println("\n1. Объединение строк в одну строку:");
+        List<String> stringList = Arrays.asList("qwerty", "asdfg", "zx");
+        String concatenatedString = Reduce.reduceList(stringList, stringConcatenator, "");
+        System.out.println("Исходный список: " + stringList);
+        System.out.println("Результат: " + concatenatedString);
+
+        System.out.println("\n2. Сумма чисел:");
+        List<Integer> numbers = Arrays.asList(1, -3, 7);
+        Integer sum = Reduce.reduceList(numbers, sumReducer, 0);
+        System.out.println("Исходный список: " + numbers);
+        System.out.println("Сумма: " + sum);
+
+        System.out.println("\n3. Общее количество элементов во всех списках:");
+
+        List<List<Integer>> listInt = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+          System.out.println("\n--- Список " + (i + 1) + " ---");
+          System.out.print("Введите количество элементов в списке (от 1 до 4): ");
+          int size = InputValidation.inputInt("", 1, 4);
+
+          List<Integer> currentList = new ArrayList<>();
+          for (int j = 0; j < size; j++) {
+            System.out.print("Элемент " + (j + 1) + ": ");
+            currentList.add(InputValidation.inputInt("", -100, 100));
+          }
+          listInt.add(currentList);
+        }
+
+        List<Integer> sizes = new ArrayList<>();
+        for (List<Integer> innerList : listInt) {
+          sizes.add(innerList.size());
+        }
+
+        Integer totalElements = Reduce.reduceList(sizes, totalSizeReducer, 0);
+
+        System.out.println("\nРезультаты:");
+        System.out.println("Исходные списки: " + listInt);
+        System.out.println("Размеры каждого списка: " + sizes);
+        System.out.println("Общее количество элементов: " + totalElements);
+        break;
+
+      }
+      case 7: {
+        System.out.println("\n1. Разделение чисел на положительные и отрицательные:");
+        List<Integer> numbers = Arrays.asList(1, -3, 7, -2, 0, -5, 4);
+
+        List<Integer> positiveNumbers = ForCollections.collectToList(
+            numbers,
+            new Supplier<List<Integer>>() {
+              @Override
+              public List<Integer> get() {
+                return new ArrayList<>();
+              }
+            },
+            new Function<Integer, Boolean>() {
+              @Override
+              public Boolean apply(Integer n) {
+                return n > 0;
+              }
+            }
+        );
+
+        List<Integer> negativeNumbers = ForCollections.collectToList(
+            numbers,
+            new Supplier<List<Integer>>() {
+              @Override
+              public List<Integer> get() {
+                return new ArrayList<>();
+              }
+            },
+            new Function<Integer, Boolean>() {
+              @Override
+              public Boolean apply(Integer n) {
+                return n < 0;
+              }
+            }
+        );
+
+        System.out.println("Исходный список: " + numbers);
+        System.out.println("Положительные числа: " + positiveNumbers);
+        System.out.println("Отрицательные числа: " + negativeNumbers);
+
+        System.out.println("\n2. Разделение строк по длине:");
+        List<String> stringList = Arrays.asList("qwerty", "asdfg", "zx", "qw", "hello", "test",
+            "a");
+
+        Set<Integer> uniqueLengths = new HashSet<>();
+        for (String str : stringList) {
+          uniqueLengths.add(str.length());
+        }
+
+        Map<Integer, List<String>> stringsByLength = new HashMap<>();
+        for (Integer length : uniqueLengths) {
+          List<String> stringsWithSameLength = ForCollections.collectToList(
+              stringList,
+              new Supplier<List<String>>() {
+                @Override
+                public List<String> get() {
+                  return new ArrayList<>();
+                }
+              },
+              new Function<String, Boolean>() {
+                @Override
+                public Boolean apply(String s) {
+                  return s.length() == length;
+                }
+              }
+          );
+          stringsByLength.put(length, stringsWithSameLength);
+        }
+
+        System.out.println("Исходный список: " + stringList);
+        System.out.println("Строки сгруппированные по длине:");
+        for (Map.Entry<Integer, List<String>> entry : stringsByLength.entrySet()) {
+          System.out.println("  Длина " + entry.getKey() + ": " + entry.getValue());
+        }
+
+        System.out.println("\n3. Уникальные строки (Set):");
+        List<String> stringsWithDuplicates = Arrays.asList("qwerty", "asdfg", "qwerty", "qw",
+            "asdfg", "test");
+
+        Set<String> uniqueStrings = ForCollections.collectToList(
+            stringsWithDuplicates,
+            new Supplier<Set<String>>() {
+              @Override
+              public Set<String> get() {
+                return new HashSet<>();
+              }
+            },
+            new Function<String, Boolean>() {
+              @Override
+              public Boolean apply(String s) {
+                return true;
+              }
+            }
+        );
+
+        System.out.println("Исходный список: " + stringsWithDuplicates);
+        System.out.println("Уникальные строки: " + uniqueStrings);
+        break;
+      }
+
+    }
+
+
+  }
+}

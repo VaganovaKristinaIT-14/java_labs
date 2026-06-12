@@ -1,0 +1,45 @@
+
+public class Box<T> {
+
+  private T item;
+
+  public T get() {
+    if (this.item == null) {
+      throw new IllegalStateException("Коробка пуста!");
+    }
+    return this.item;
+  }
+
+  public Box() {
+    this.item = null;
+  }
+
+  public void put(T item) {
+    if (this.item != null) {
+      throw new IllegalStateException("Коробка уже заполнена");
+    }
+    this.item = item;
+  }
+
+  public T take() {
+    if (this.item == null) {
+      throw new IllegalStateException("Коробка пустая");
+    }
+    T takenItem = this.item;
+    this.item = null;
+    return takenItem;
+  }
+
+  public boolean isFull() {
+    return this.item != null;
+  }
+
+  @Override
+  public String toString() {
+    if (item == null) {
+      return "Коробка: пустая";
+    } else {
+      return "Коробка: содержит " + item.toString();
+    }
+  }
+}

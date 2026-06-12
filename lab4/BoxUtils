@@ -1,0 +1,19 @@
+
+public class BoxUtils {
+
+  public static void putPointInBox(Box<? super Point3D> box) {
+
+    System.out.println("Введите координаты точки:");
+    double x = InputValidation.inputDouble("X: ", -1000, 1000);
+    double y = InputValidation.inputDouble("Y: ", -1000, 1000);
+    double z = InputValidation.inputDouble("Z: ", -1000, 1000);
+    Point3D point = new Point3D(x, y, z);
+
+    try {
+      box.put(point);
+      System.out.println("Точка успешно помещена в коробку: " + point);
+    } catch (IllegalStateException e) {
+      System.out.println("Ошибка: " + e.getMessage());
+    }
+  }
+}

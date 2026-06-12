@@ -1,0 +1,21 @@
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class ForCollections {
+
+  public static <T, P extends Collection<T>> P collectToList(
+      List<T> list,
+      Supplier<P> collectionFactory,
+      Function<T, Boolean> includeCondition) {
+
+    P result = collectionFactory.get();
+    for (T item : list) {
+      if (includeCondition.apply(item)) {
+        result.add(item);
+      }
+    }
+    return result;
+  }
+
+}
