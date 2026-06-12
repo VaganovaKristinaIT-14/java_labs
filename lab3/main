@@ -1,0 +1,233 @@
+package ru.vaganova.main;
+
+import ru.vaganova.valid.InputValidation;
+import ru.vaganova.entities.*;
+import ru.vaganova.geometry.*;
+import ru.vaganova.bird.*;
+import java.util.Scanner;
+
+public class Main {
+
+  public static void main(String[] args) {
+    if (args.length == 2) {
+      System.out.println("Обнаружены параметры командной строки");
+      System.out.println("Параметр 1: " + args[0]);
+      System.out.println("Параметр 2: " + args[1]);
+
+      try {
+        double result = MathOperations.power(args[0], args[1]);
+        System.out.println(args[0] + " ^ " + args[1] + " = " + Math.round(result * 100) / 100.0);
+        System.out.println("Программа завершена.");
+        return;
+
+      } catch (NumberFormatException e) {
+        System.out.println("Ошибка! Вы передали не числа!");
+      }
+    }
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Введите номер задания, которое хотите посмотреть");
+    System.out.println("1. Непустые Имена ");
+    System.out.println("2. Человек меняется");
+    System.out.println("3. Секреты");
+    System.out.println("4. Точка 3Д");
+    System.out.println("5.Птицы");
+    System.out.println("6.Мяукающие объекты");
+    System.out.println("7.Сравнение 2 точек");
+    System.out.println("8.Клонирование");
+
+    int choice = InputValidation.inputInt(" ", 1, 8);
+    switch (choice) {
+      case 1: {
+        try {
+          System.out.print(
+              "Введите фамилию,имя,отчество (имя и фамилию оставьте пустыми) или оставьте пустым: ");
+          String c1 = scanner.nextLine();
+          String c2 = scanner.nextLine();
+          String c3 = scanner.nextLine();
+          Name name = new Name(c1, c2, c3);
+          System.out.println("Создано: " + name);
+
+          System.out.println(
+              "Введите фамилию,имя,отчество (каждое с новой строки) или оставьте пустым: ");
+          String s1 = scanner.nextLine();
+          String s2 = scanner.nextLine();
+          String s3 = scanner.nextLine();
+          Name emptyName = new Name(s1, s2, s3);
+          System.out.println("Создано: " + emptyName);
+        } catch (IllegalArgumentException e) {
+          System.out.println("ОШИБКА: " + e.getMessage());
+        }
+        break;
+      }
+      case 2: {
+
+        System.out.println("\n1. Создание человека:");
+        String name1 = InputValidation.inputString("Введите имя человека: ");
+        String name2 = InputValidation.inputString(
+            "Введите имя отца человека (или оставьте пустым): ");
+        int a = InputValidation.inputInt("Введите рост человека", 1, 500);
+        Human father1 = new Human(name2, 180);
+        Human person1 = new Human(name1, a, father1);
+        System.out.println("Создан: " + person1);
+        System.out.print("Отец ");
+        System.out.print(person1.getFather());
+
+        System.out.println("\n3. Изменение роста у человека:");
+        System.out.println("Текущий рост: " + person1.getHeight());
+        person1.setHeight(0);
+        System.out.println("Новый рост: " + person1.getHeight());
+        break;
+      }
+      case 3: {
+        System.out.print("Введите имя первого хранителя: ");
+        String name1 = scanner.nextLine();
+        System.out.print("Введите текст секрета: ");
+        String text1 = scanner.nextLine();
+
+        // Создание первого секрета
+        Secret keeper1 = new Secret(name1, text1);
+        System.out.println("Создан: " + keeper1);
+
+        // Ввод данных для второго хранителя
+        System.out.print("Введите имя второго хранителя: ");
+        String name2 = scanner.nextLine();
+
+        // Передача секрета второму хранителю
+        Secret keeper2 = new Secret(keeper1, name2);
+        System.out.println("Создан: " + keeper2);
+
+        // Ввод данных для третьего хранителя
+        System.out.print("Введите имя третьего хранителя: ");
+        String name3 = scanner.nextLine();
+
+        // Передача секрета третьему хранителю
+        Secret keeper3 = new Secret(keeper2, name3);
+        System.out.println("Создан: " + keeper3);
+
+        // Выбор хранителя для проверки методов
+        System.out.print("Выберите хранителя для вывода информации (1, 2 или 3): ");
+        int cho = scanner.nextInt();
+
+        Secret selectedKeeper;
+        if (cho == 1) {
+          selectedKeeper = keeper1;
+        } else if (cho == 2) {
+          selectedKeeper = keeper2;
+        } else {
+          selectedKeeper = keeper3;
+        }
+
+        System.out.println("Порядковый номер: " + selectedKeeper.getOrderNumber());
+        System.out.println(
+            "Количество последующих хранителей: " + selectedKeeper.getFollowersCount());
+
+        System.out.print(
+            "получить имя N-го человек узнавшего секрет (1 - следующий, -1 - предыдущий): ");
+        int n = scanner.nextInt();
+        System.out.println("Имя " + n + "-го хранителя: " + selectedKeeper.getKeeperNameAt(n));
+
+        System.out.println("узнать разницу в количестве символов текста секрета с N-ым человеком");
+        int m = scanner.nextInt();
+        System.out.println("Разница длины текста: " + selectedKeeper.getTextLengthDifference(m));
+
+        System.out.println("Тестирование передачи секрета 2 людям");
+        String name4 = InputValidation.inputString(
+            "Введите имя второго хранителя для одного секрета: ");
+
+        try {
+          System.out.println("Попытка передать секрет от " + keeper1.getKeeperName() + " к " + name4
+              + "...");
+          Secret keeper4 = new Secret(keeper1, name4);
+          System.out.println("Создан: " + keeper4);
+        } catch (IllegalStateException e) {
+          System.out.println(e.getMessage());
+
+        }
+
+        break;
+      }
+      case 4: {
+        int x = InputValidation.inputInt("Введите координату X (-100 до 100): ", -100, 100);
+        int y = InputValidation.inputInt("Введите координату Y (-100 до 100): ", -100, 100);
+        int z = InputValidation.inputInt("Введите координату Z (-100 до 100): ", -100, 100);
+        Point3D point = PointFactory.create3D(x, y, z);
+        System.out.println("Созданная трехмерная точка: " + point);
+        break;
+
+      }
+      case 5: {
+
+        System.out.println("\n1. Воробей:");
+        Sparrow sparrow = new Sparrow();
+        System.out.println("Создан: " + sparrow);
+        sparrow.sing();
+
+        System.out.println("\n2. Кукушка:");
+        Cuckoo cuckoo = new Cuckoo();
+        System.out.println("Создан: " + cuckoo);
+        cuckoo.sing();
+
+        System.out.println("\n3. Попугай:");
+        String parrotText = scanner.nextLine();
+        Parrot parrot = new Parrot(parrotText);
+        System.out.println("Создан: " + parrot);
+        parrot.sing();
+        break;
+      }
+      case 6: {
+        Cat cat1 = new Cat("Барсик");
+        Cat cat2 = new Cat("Мурка");
+        RoboCat robot1 = new RoboCat("Механо");
+        System.out.println("Обычные коты");
+        Meow[] catsOnly = {cat1, cat2};
+        MeowExecutor.makeAllMeow(catsOnly);
+        System.out.println("Робо-коты");
+        Meow[] robotsOnly = {robot1};
+        MeowExecutor.makeAllMeow(robotsOnly);
+        break;
+      }
+      case 7: {
+        int x1 = InputValidation.inputInt("Введите координату X первой точки: ", -100, 100);
+        int y1 = InputValidation.inputInt("Введите координату Y первой точки: ", -100, 100);
+        Point2D point1 = PointFactory.create2D(x1, y1);
+
+        int x2 = InputValidation.inputInt("Введите координату X второй точки: ", -100, 100);
+        int y2 = InputValidation.inputInt("Введите координату Y второй точки: ", -100, 100);
+        Point2D point2 = PointFactory.create2D(x2, y2);
+
+        System.out.println("Результаты");
+        System.out.println("Первая точка: " + point1);
+        System.out.println("Вторая точка: " + point2);
+
+        if (point1.equals(point2)) {
+          System.out.println("Точки равны, т.к находятся в одинаковых координатах.");
+        } else {
+          System.out.println("Точки не равны, т.к находятся в разных координатах.");
+        }
+        break;
+      }
+      case 8: {
+        System.out.println("Введите координаты 3D точки:");
+        System.out.print("X: ");
+        int x = scanner.nextInt();
+        System.out.print("Y: ");
+        int y = scanner.nextInt();
+        System.out.print("Z: ");
+        int z = scanner.nextInt();
+
+        Point3D originalPoint = PointFactory.create3D(x, y, z);
+        System.out.println("Создана оригинальная точка: " + originalPoint);
+
+        Point3D clonedPoint = originalPoint.clone();
+        System.out.println("Создана клонированная точка: " + clonedPoint);
+
+        System.out.println("Это один и тот же объект? " + (originalPoint == clonedPoint));
+
+        System.out.println("Координаты одинаковые? " + originalPoint.equals(clonedPoint));
+      }
+
+    }
+
+
+  }
+}

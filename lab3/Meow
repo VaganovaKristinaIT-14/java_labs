@@ -1,0 +1,6 @@
+package ru.vaganova.main;
+
+public interface Meow {
+
+  void meow();
+}

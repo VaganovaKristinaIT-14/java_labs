@@ -1,0 +1,11 @@
+package ru.vaganova.main;
+
+public class MeowExecutor {
+
+  public static void makeAllMeow(Meow[] meowables) {
+    System.out.println("Эти сущности думают, что умеют мяукать");
+    for (Meow meowable : meowables) {
+      meowable.meow();
+    }
+  }
+}

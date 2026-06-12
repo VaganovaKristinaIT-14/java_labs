@@ -1,0 +1,25 @@
+package ru.vaganova.main;
+
+public class RoboCat implements Meow {
+
+  private String model;
+
+  public RoboCat() {
+    this.model = "РобоКот";
+  }
+
+  public RoboCat(String model) {
+    this.model = model;
+  }
+
+
+  @Override
+  public void meow() {
+    System.out.println(model + ": БИП-МЯУ-БИП");
+  }
+
+  @Override
+  public String toString() {
+    return "Робот: " + model;
+  }
+}
